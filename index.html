@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PIXEL PLAY — Thai Word Challenge</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="/socket.io/socket.io.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">PIXEL<span>/</span>PLAY</a>
+    <nav><a href="#how">วิธีเล่น</a><a href="#about">เกี่ยวกับ</a></nav>
+    <span class="status"><i></i> WORD GAME</span>
+  </header>
+
+  <main class="shell">
+
+    <section id="home-panel" class="home-panel">
+      <p class="eyebrow">WELCOME TO PIXEL / PLAY</p>
+      <h1>คำไทย คิดไว<br><span>ท้าทายความคิดของคุณ</span></h1>
+      <p class="lead">สุ่มพยัญชนะ 1 ตัว แล้วเติมคำศัพท์ให้ครบ 5 หมวดหมู่ เลือกเล่นคนเดียวหรือชวนเพื่อนมาแข่งขันก็ได้</p>
+      <div class="home-choices">
+        <button class="choice-card" id="home-solo">
+          <span class="choice-number">01 / SOLO</span>
+          <strong>เล่นคนเดียว</strong>
+          <span>ฝึกคิดคำศัพท์และทำคะแนนสูงสุดของตัวเอง</span>
+          <em>เริ่มเล่นคนเดียว ↗</em>
+        </button>
+        <button class="choice-card choice-dark" id="home-online">
+          <span class="choice-number">02 / MULTIPLAYER</span>
+          <strong>เล่นหลายคน</strong>
+          <span>สร้างห้องหรือเข้าร่วมห้องเพื่อเล่นกับเพื่อน</span>
+          <em>เล่นกับเพื่อน ↗</em>
+        </button>
+      </div>
+      <div class="home-note"><span>5 CATEGORIES</span><span>60 SECONDS</span><span>THAI WORD GAME</span></div>
+    </section>
+
+    <section class="intro game-intro hidden">
+      <p class="eyebrow">THAI LANGUAGE • WORD CHALLENGE</p>
+      <h1>คิดคำให้ไว<br><span>เริ่มด้วยตัวอักษรที่กำหนด</span></h1>
+      <p class="lead">สุ่มพยัญชนะ 1 ตัว แล้วเติมคำศัพท์ให้ครบทุกหมวดหมู่ แข่งกับเวลา หรือชวนเพื่อนมาเล่นออนไลน์</p>
+    </section>
+
+    <section class="modebar hidden">
+      <button class="mode active" data-mode="solo">เล่นคนเดียว</button>
+      <button class="mode" data-mode="online">เล่นออนไลน์</button>
+    </section>
+
+    <section id="solo-panel" class="game-layout hidden">
+      <div class="game-card">
+        <div class="game-head">
+          <div><p class="eyebrow">ROUND <span id="round">01</span></p><h2>ตัวอักษรของคุณ</h2></div>
+          <div class="timer"><small>เวลาที่เหลือ</small><strong id="timer">60</strong><small>วินาที</small></div>
+        </div>
+        <div class="letter-stage" aria-label="ตัวอักษรที่สุ่มได้">
+          <span>YOUR RANDOM LETTER</span>
+          <strong id="stage-letter">ก</strong>
+          <small>พิมพ์คำตอบให้ขึ้นต้นด้วยพยัญชนะนี้</small>
+        </div>
+        <div class="letter-wrap">
+          <span class="muted">ตอบคำที่ขึ้นต้นด้วย</span>
+          <strong id="letter">ก</strong>
+          <button id="new-round" class="button button-light">สุ่มตัวใหม่</button>
+        </div>
+        <div id="categories" class="category-grid"></div>
+        <div class="game-actions">
+          <button id="submit" class="button button-dark">ตรวจคำตอบทั้งหมด</button>
+          <button id="reset" class="button button-outline">เริ่มใหม่</button>
+        </div>
+        <p id="feedback" class="feedback" role="status">กรอกคำตอบให้ครบ แล้วกดตรวจคำตอบ</p>
+      </div>
+      <aside class="side-card">
+        <p class="eyebrow">YOUR SCORE</p>
+        <strong id="score" class="score">0</strong>
+        <p class="muted">คะแนนสะสม</p>
+        <hr>
+        <div class="stat"><span>ตอบถูก</span><b id="correct">0 / 5</b></div>
+        <div class="stat"><span>สถิติสูงสุด</span><b id="best">0</b></div>
+        <div class="tip"><b>เคล็ดลับ</b><p>คำตอบต้องขึ้นต้นด้วยพยัญชนะที่สุ่มได้ และตรงกับหมวดหมู่ เช่น ก + สัตว์ = กบ</p></div>
+      </aside>
+    </section>
+
+
+    <section id="result-panel" class="result-panel hidden">
+      <div class="result-header">
+        <p class="eyebrow">ROUND SUMMARY</p>
+        <h2>สรุปผลการเล่น</h2>
+        <p class="muted">ตรวจคำตอบครบทั้ง 5 หมวดแล้ว</p>
+      </div>
+      <div class="result-total">
+        <div><span>ตอบถูก</span><strong id="result-correct">0</strong></div>
+        <div><span>ตอบผิด</span><strong id="result-wrong">5</strong></div>
+        <div><span>คะแนนที่ได้</span><strong id="result-points">0</strong></div>
+      </div>
+      <div id="result-list" class="result-list"></div>
+      <p id="result-note" class="result-note"></p>
+      <div class="game-actions">
+        <button id="play-again" class="button button-dark">เล่นอีกครั้ง</button>
+        <button id="result-home" class="button button-outline">กลับหน้าแรก</button>
+      </div>
+    </section>
+
+    <section id="online-panel" class="online-panel hidden">
+      <div class="online-card">
+        <p class="eyebrow">MULTIPLAYER</p><h2>เล่นกับเพื่อน</h2>
+        <p class="muted">สร้างห้องแล้วแชร์รหัสให้เพื่อน หรือเข้าร่วมห้องที่มีอยู่</p>
+        <label>ชื่อผู้เล่น<input id="player-name" maxlength="18" placeholder="ชื่อของคุณ"></label>
+        <div class="online-buttons">
+          <button id="create-room" class="button button-dark">สร้างห้อง</button>
+          <div class="join-row"><input id="room-code" maxlength="6" placeholder="รหัสห้อง"><button id="join-room" class="button button-light">เข้าร่วม</button></div>
+        </div>
+        <p id="online-status" class="feedback">สถานะ: ยังไม่ได้เชื่อมต่อห้อง</p>
+        <div id="room-info" class="room-info hidden"></div>
+      </div>
+    </section>
+
+    <section id="how" class="info-section">
+      <p class="eyebrow">HOW TO PLAY</p><h2>วิธีเล่น</h2>
+      <div class="how-grid">
+        <article><b>01</b><h3>สุ่มตัวอักษร</h3><p>ระบบสุ่มพยัญชนะไทย 1 ตัวให้ผู้เล่น</p></article>
+        <article><b>02</b><h3>เติมทุกหมวด</h3><p>พิมพ์คำศัพท์ให้ตรงกับหมวดหมู่ทั้ง 5 หมวด</p></article>
+        <article><b>03</b><h3>ส่งคำตอบ</h3><p>ระบบตรวจตัวอักษรและความหมายของคำตอบ</p></article>
+        <article><b>04</b><h3>สะสมคะแนน</h3><p>ตอบถูกได้คะแนน และทำสถิติของตัวเอง</p></article>
+      </div>
+    </section>
+
+    <section id="about" class="about-section">
+      <p class="eyebrow">ABOUT THE PROJECT</p>
+      <h2>เรียนรู้ภาษาไทยผ่านเกม</h2>
+      <p>PIXEL PLAY เป็นเว็บไซต์เกมเพื่อการศึกษา ออกแบบให้ผู้เล่นฝึกคิดคำศัพท์ภาษาไทยอย่างสนุกสนาน สามารถพัฒนาต่อเป็นกิจกรรมแข่งขันในห้องเรียนได้</p>
+    </section>
+    <button id="back-home" class="button button-outline back-home hidden">← กลับหน้าแรก</button>
+  </main>
+  <footer><span>PIXEL/PLAY</span><span>THAI WORD CHALLENGE · PROJECT EDITION</span></footer>
+</body>
+</html>
